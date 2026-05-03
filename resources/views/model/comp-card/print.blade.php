@@ -17,10 +17,10 @@
     .comp-agency-name{font-family:'Cormorant Garamond',serif;font-size:14pt;letter-spacing:3pt;color:#0B132B}
     .comp-agency-sub{font-size:5pt;letter-spacing:4pt;text-transform:uppercase;color:#C9A96E;margin-top:1mm}
 
-    .comp-images{display:grid;grid-template-columns:2fr 1fr;grid-template-rows:auto auto;gap:4mm;margin-bottom:8mm;flex:1}
+    .comp-images{display:grid;grid-template-columns:2fr 1fr;grid-template-rows:repeat(2,minmax(0,1fr));gap:4mm;margin-bottom:8mm;flex:1}
     .comp-img-main{grid-row:span 2;overflow:hidden;border-radius:2mm;background:#f5f5f5}
     .comp-img-main img{width:100%;height:100%;object-fit:cover;object-position:top;display:block}
-    .comp-img-small{overflow:hidden;border-radius:2mm;background:#f5f5f5;aspect-ratio:3/4}
+    .comp-img-small{overflow:hidden;border-radius:2mm;background:#f5f5f5}
     .comp-img-small img{width:100%;height:100%;object-fit:cover;object-position:top;display:block}
     .comp-img-placeholder{width:100%;height:100%;background:linear-gradient(160deg,#f9f9f9,#f0f0f0);display:flex;align-items:center;justify-content:center}
     .comp-img-placeholder span{color:#d1d5db;font-size:18pt}
