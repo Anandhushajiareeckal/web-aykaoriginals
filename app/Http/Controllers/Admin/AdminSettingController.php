@@ -1,0 +1,17 @@
+<?php
+namespace App\Http\Controllers\Admin;
+use App\Http\Controllers\Controller;
+use App\Models\SiteSetting;
+use Illuminate\Http\Request;
+class AdminSettingController extends Controller {
+    public function index() {
+        $settings = SiteSetting::all()->keyBy('key');
+        return view('admin.settings.index',['settings'=>$settings]);
+    }
+    public function update(Request $request) {
+        foreach($request->except(['_token','_method']) as $key => $value) {
+            SiteSetting::set($key, $value);
+        }
+        return back()->with('success','Settings saved successfully.');
+    }
+}
