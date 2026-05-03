@@ -2,7 +2,13 @@
 @section('title','Comp Card Builder')
 @section('content')
 
-<div style="display:grid;grid-template-columns:1fr 380px;gap:1.5rem;align-items:start">
+<style>
+@media(max-width:900px){
+  .comp-card-grid{grid-template-columns:1fr !important}
+  #upload-zone{padding:1rem !important}
+}
+</style>
+<div class="comp-card-grid" style="display:grid;grid-template-columns:1fr 380px;gap:1.5rem;align-items:start">
 
   {{-- ── Left: Upload Section ── --}}
   <div>

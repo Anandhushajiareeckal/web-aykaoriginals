@@ -287,9 +287,9 @@
       @endif
     @endif
   </a>
-  <a href="{{ route('model.profile.edit') }}" class="bottom-nav-item {{ request()->routeIs('model.profile.*') ? 'active' : '' }}">
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-    <span>Profile</span>
+  <a href="{{ route('model.comp-card.index') }}" class="bottom-nav-item {{ request()->routeIs('model.comp-card.*') ? 'active' : '' }}">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0M9 14h6m-6 4h6"/></svg>
+    <span>Comp Card</span>
   </a>
   <a href="{{ route('model.settings.index') }}" class="bottom-nav-item {{ request()->routeIs('model.settings.*') ? 'active' : '' }}">
     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/></svg>

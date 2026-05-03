@@ -2,12 +2,30 @@
 @section('title','Settings')
 @section('content')
 <style>
+.mobile-only{display:none;}
 @media(max-width:900px){
   .settings-grid{grid-template-columns:1fr !important}
   .btn{width:100%;justify-content:center}
+  .mobile-only{display:block !important;}
 }
 </style>
 <div class="settings-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;align-items:start">
+
+  {{-- Mobile Only: Edit Profile Link --}}
+  <div class="panel mobile-only" style="grid-column:1/-1;">
+    <a href="{{ route('model.profile.edit') }}" style="display:flex;align-items:center;justify-content:space-between;padding:1.25rem;text-decoration:none;color:var(--navy)">
+      <div style="display:flex;align-items:center;gap:.75rem">
+        <div style="width:40px;height:40px;border-radius:10px;background:var(--off);display:flex;align-items:center;justify-content:center;color:var(--accent)">
+          <svg style="width:1.25rem;height:1.25rem" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+        </div>
+        <div>
+          <div style="font-weight:600;font-size:.95rem">Edit Profile Details</div>
+          <div style="font-size:.75rem;color:var(--slate2);margin-top:.15rem">Update your measurements, bio, and info</div>
+        </div>
+      </div>
+      <svg style="width:1rem;height:1rem;color:var(--slate2)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+    </a>
+  </div>
 
   {{-- Account Info --}}
   <div class="panel">
