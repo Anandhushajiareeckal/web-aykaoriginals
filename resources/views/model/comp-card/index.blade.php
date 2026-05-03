@@ -97,7 +97,7 @@
       </div>
       <div class="panel-body" style="padding:.75rem">
         {{-- Comp Card Layout A4-ratio preview --}}
-        <div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:.75rem;font-family:'Cormorant Garamond',serif;aspect-ratio:148/210;overflow:hidden;position:relative">
+        <div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:.75rem;font-family:'Cormorant Garamond',serif;aspect-ratio:148/210;overflow:hidden;position:relative;display:flex;flex-direction:column">
           {{-- Header --}}
           <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem;border-bottom:1px solid #e5e7eb;padding-bottom:.35rem">
             <div>
@@ -108,7 +108,7 @@
           </div>
 
           {{-- Images grid --}}
-          <div style="display:grid;grid-template-columns:2fr 1fr;grid-template-rows:1fr 1fr;gap:.35rem;height:65%;margin-bottom:.5rem">
+          <div style="display:grid;grid-template-columns:2fr 1fr;grid-template-rows:repeat(2,minmax(0,1fr));gap:.35rem;flex:1;margin-bottom:.5rem">
             @if($compImages->count() > 0)
             <div style="grid-row:span 2;border-radius:4px;overflow:hidden;background:#f5f5f5">
               <img src="{{ $compImages->first()->getUrl('medium') }}" style="width:100%;height:100%;object-fit:cover;object-position:top">
