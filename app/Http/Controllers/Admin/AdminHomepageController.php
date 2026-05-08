@@ -20,7 +20,8 @@ class AdminHomepageController extends Controller {
         ]);
         
         if ($request->hasFile('video_file')) {
-            $path = $request->file('video_file')->store('homepage_videos', 'public');
+            // Using storePublicly ensures the file is saved with 'public' visibility (0644)
+            $path = $request->file('video_file')->storePublicly('homepage_videos', 'public');
             $v['video_url'] = '/storage/' . $path;
         }
         unset($v['video_file']);
