@@ -12,7 +12,7 @@
       <span style="font-size:.7rem;color:#8B90A0;margin-left:.5rem">Front page full-screen video section</span>
     </div>
     <div style="padding:1.5rem">
-      <form method="POST" action="{{ route('admin.homepage.section.update','hero') }}">
+      <form method="POST" action="{{ route('admin.homepage.section.update','hero') }}" enctype="multipart/form-data">
         @csrf
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem" class="sm:grid-cols-2">
           <div>
@@ -27,10 +27,19 @@
             <label style="display:block;font-size:.65rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#5E6472;margin-bottom:.4rem">Description</label>
             <textarea name="body" rows="3" style="width:100%;padding:.625rem .875rem;border:1.5px solid #E4E6F0;border-radius:8px;font-size:.85rem;color:#0B132B;resize:vertical" placeholder="Hero description text">{{ $sections['hero']->body ?? '' }}</textarea>
           </div>
-          <div style="grid-column:span 2">
-            <label style="display:block;font-size:.65rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#5E6472;margin-bottom:.4rem">Video URL (MP4)</label>
+          <div>
+            <label style="display:block;font-size:.65rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#5E6472;margin-bottom:.4rem">Upload Local Video (MP4)</label>
+            <input type="file" name="video_file" accept="video/mp4,video/x-m4v,video/*" style="width:100%;padding:.5rem .875rem;border:1.5px solid #E4E6F0;border-radius:8px;font-size:.85rem;color:#0B132B">
+            <p style="font-size:.7rem;color:#8B90A0;margin-top:.35rem">Upload from computer (takes precedence over URL).</p>
+          </div>
+          <div>
+            <label style="display:block;font-size:.65rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#5E6472;margin-bottom:.4rem">Or Video URL</label>
             <input type="text" name="video_url" value="{{ $sections['hero']->video_url ?? '' }}" style="width:100%;padding:.625rem .875rem;border:1.5px solid #E4E6F0;border-radius:8px;font-size:.85rem;color:#0B132B" placeholder="https://example.com/video.mp4">
-            <p style="font-size:.7rem;color:#8B90A0;margin-top:.35rem">Use a hosted MP4 URL. Leave blank to use gradient background.</p>
+            @if(!empty($sections['hero']->video_url))
+              <div style="margin-top:.35rem;font-size:.75rem;">
+                Current: <a href="{{ $sections['hero']->video_url }}" target="_blank" style="color:#6C63FF;text-decoration:underline;">View Video</a>
+              </div>
+            @endif
           </div>
           <div>
             <label style="display:block;font-size:.65rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#5E6472;margin-bottom:.4rem">Button 1 Label</label>

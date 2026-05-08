@@ -215,9 +215,50 @@
       <span>View Site</span>
     </a>
     <div class="topbar-divider"></div>
-    <div class="topbar-profile">
-      <div class="topbar-profile-avatar">{{ strtoupper(substr(auth()->user()->name ?? 'M', 0, 2)) }}</div>
-      <span class="topbar-profile-name">{{ auth()->user()->name ?? 'Model' }}</span>
+    <div class="topbar-profile" x-data="{ open: false }" @click.away="open = false" style="position:relative;border:none;background:transparent;padding:0">
+      <div @click="open = !open" style="display:flex;align-items:center;gap:.5rem;padding:.35rem .6rem .35rem .35rem;border-radius:8px;border:1px solid var(--border);cursor:pointer;transition:all .2s;background:#fff">
+        <div class="topbar-profile-avatar" style="overflow:hidden">
+          @php
+            $user = auth()->user();
+            $talent = $user->talent;
+            $avatarUrl = null;
+            if ($talent) {
+                if ($talent->hasMedia('profile')) {
+                    $avatarUrl = $talent->getFirstMediaUrl('profile', 'thumb');
+                } elseif ($talent->hasMedia('comp_card')) {
+                    $avatarUrl = $talent->getFirstMediaUrl('comp_card', 'thumb');
+                } elseif ($talent->hasMedia('portfolio')) {
+                    $avatarUrl = $talent->getFirstMediaUrl('portfolio', 'thumb');
+                }
+            }
+          @endphp
+          @if($avatarUrl)
+            <img src="{{ $avatarUrl }}" alt="{{ $user->name }}" style="width:100%;height:100%;object-fit:cover">
+          @else
+            {{ strtoupper(substr($user->name ?? 'M', 0, 2)) }}
+          @endif
+        </div>
+        <span class="topbar-profile-name">{{ $user->name ?? 'Model' }}</span>
+        <svg style="width:1rem;height:1rem;color:var(--slate2)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+      </div>
+
+      <!-- Dropdown Menu -->
+      <div x-show="open" x-transition style="display:none;position:absolute;top:100%;right:0;margin-top:.5rem;background:#fff;border:1px solid var(--border);border-radius:8px;box-shadow:0 4px 15px rgba(0,0,0,.05);width:160px;z-index:50">
+        <div style="padding:.35rem">
+          <a href="{{ route('model.profile.edit') }}" style="display:flex;align-items:center;gap:.5rem;padding:.5rem .75rem;border-radius:6px;font-size:.8rem;color:var(--navy);font-weight:500;transition:background .2s" onmouseover="this.style.background='var(--off)'" onmouseout="this.style.background='transparent'">
+            <svg style="width:1rem;height:1rem" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+            Profile
+          </a>
+          <div style="height:1px;background:var(--border);margin:.25rem 0"></div>
+          <form method="POST" action="{{ route('model.logout') }}" style="margin:0">
+            @csrf
+            <button type="submit" style="width:100%;text-align:left;display:flex;align-items:center;gap:.5rem;padding:.5rem .75rem;border:none;background:transparent;border-radius:6px;font-size:.8rem;color:var(--red);font-weight:500;cursor:pointer;transition:background .2s" onmouseover="this.style.background='#fee2e2'" onmouseout="this.style.background='transparent'">
+              <svg style="width:1rem;height:1rem" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7"/></svg>
+              Logout
+            </button>
+          </form>
+        </div>
+      </div>
     </div>
   </div>
 </header>

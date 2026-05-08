@@ -14,9 +14,17 @@ class AdminHomepageController extends Controller {
         $v = $request->validate([
             'heading'=>'nullable|string|max:255','subheading'=>'nullable|string|max:255',
             'body'=>'nullable|string','video_url'=>'nullable|string|max:500',
+            'video_file'=>'nullable|file|mimetypes:video/mp4,video/x-m4v,video/quicktime|max:102400',
             'btn1_label'=>'nullable|string|max:100','btn1_url'=>'nullable|string|max:255',
             'btn2_label'=>'nullable|string|max:100','btn2_url'=>'nullable|string|max:255',
         ]);
+        
+        if ($request->hasFile('video_file')) {
+            $path = $request->file('video_file')->store('homepage_videos', 'public');
+            $v['video_url'] = '/storage/' . $path;
+        }
+        unset($v['video_file']);
+
         $v['is_active'] = $request->boolean('is_active',true);
         HomepageSection::updateOrCreate(['section_key'=>$key],$v);
         return back()->with('success','Section updated successfully.');
