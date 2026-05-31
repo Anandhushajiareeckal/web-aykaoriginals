@@ -88,7 +88,7 @@
 
     <a href="{{ route('inquiries.create') }}" class="nav-cta hidden lg:block">Contact Us</a>
 
-    <button class="hamburger lg:hidden" @click="open=true">
+    <button class="hamburger lg:hidden" @click="open = !open">
       <span :class="open?'rotate-45 translate-y-2':''"></span>
       <span :class="open?'opacity-0':''"></span>
       <span :class="open?'-rotate-45 -translate-y-2':''"></span>
@@ -96,22 +96,24 @@
   </div>
 
   {{-- Mobile Menu --}}
-  <div class="mobile-menu" :class="open?'open':''" x-show="open" x-cloak>
-    <button class="mobile-menu-close" @click="open=false">✕</button>
-    <a href="{{ route('home') }}" class="mobile-nav-a" @click="open=false">Home</a>
-    <a href="{{ route('about') }}" class="mobile-nav-a" @click="open=false">About</a>
-    <a href="{{ route('services.index') }}" class="mobile-nav-a" @click="open=false">Services</a>
-    <div>
-      <span class="mobile-nav-a" style="display:block">Requirement</span>
-      <div class="mobile-sub">
-        <a href="{{ route('talent.index') }}" @click="open=false">Talent</a>
-        <a href="{{ route('projects.index') }}" @click="open=false">Production</a>
+  <template x-teleport="body">
+    <div class="mobile-menu" :class="open?'open':''" x-show="open" x-cloak>
+      <button class="mobile-menu-close" @click="open=false">✕</button>
+      <a href="{{ route('home') }}" class="mobile-nav-a" @click="open=false">Home</a>
+      <a href="{{ route('about') }}" class="mobile-nav-a" @click="open=false">About</a>
+      <a href="{{ route('services.index') }}" class="mobile-nav-a" @click="open=false">Services</a>
+      <div>
+        <span class="mobile-nav-a" style="display:block">Requirement</span>
+        <div class="mobile-sub">
+          <a href="{{ route('talent.index') }}" @click="open=false">Talent</a>
+          <a href="{{ route('projects.index') }}" @click="open=false">Production</a>
+        </div>
       </div>
+      <a href="{{ route('blog.index') }}" class="mobile-nav-a" @click="open=false">Journal</a>
+      <a href="{{ route('gallery.index') }}" class="mobile-nav-a" @click="open=false">Gallery</a>
+      <a href="{{ route('inquiries.create') }}" class="mobile-nav-a" style="color:#fff;margin-top:1rem;padding:1rem 1.5rem;border:1px solid rgba(255,255,255,.3);text-align:center" @click="open=false">Contact Us</a>
     </div>
-    <a href="{{ route('blog.index') }}" class="mobile-nav-a" @click="open=false">Journal</a>
-    <a href="{{ route('gallery.index') }}" class="mobile-nav-a" @click="open=false">Gallery</a>
-    <a href="{{ route('inquiries.create') }}" class="mobile-nav-a" style="color:#fff;margin-top:1rem;padding:1rem 1.5rem;border:1px solid rgba(255,255,255,.3);text-align:center" @click="open=false">Contact Us</a>
-  </div>
+  </template>
 </header>
 
 <main>@yield('content')</main>
