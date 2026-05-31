@@ -10,6 +10,7 @@ class HomeController extends Controller {
             'clientsSection'  => HomepageSection::get('clients'),
             'aboutSection'    => HomepageSection::get('about'),
             'ctaSection'      => HomepageSection::get('cta'),
+            'servicesSection' => HomepageSection::get('services'),
             'clients'         => ClientLogo::active()->orderBy('sort_order')->with('media')->get(),
             'featuredTalent'  => Talent::active()->featured()->with('media')->first(),
             'featuredProject' => Project::active()->featured()->with('media')->first(),

@@ -66,6 +66,39 @@
     </div>
   </div>
 
+  {{-- ── STATS BAR ── --}}
+  <div style="background:#fff;border-radius:12px;border:1px solid #E4E6F0;overflow:hidden;margin-bottom:1.5rem">
+    <div style="padding:1rem 1.25rem;border-bottom:1px solid #E4E6F0;display:flex;align-items:center;gap:.75rem;background:#8B5CF60d">
+      <div style="width:10px;height:10px;border-radius:50%;background:#8B5CF6"></div>
+      <span style="font-size:.85rem;font-weight:600;color:#0B132B">Stats Bar</span>
+      <span style="font-size:.7rem;color:#8B90A0;margin-left:.5rem">4 statistics shown below the hero section</span>
+    </div>
+    <div style="padding:1.5rem">
+      <form method="POST" action="{{ route('admin.settings.update') }}">
+        @csrf
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1rem">
+          @for($i=1;$i<=4;$i++)
+          <div style="background:#F8F9FA;padding:1rem;border-radius:8px;border:1px solid #E4E6F0">
+            <label style="display:block;font-size:.7rem;font-weight:600;color:#0B132B;margin-bottom:.75rem">Stat Item {{ $i }}</label>
+            <div style="margin-bottom:.5rem">
+              <label style="display:block;font-size:.6rem;text-transform:uppercase;color:#8B90A0;margin-bottom:.25rem">Value (e.g. 100+)</label>
+              <input type="text" name="stats_count_{{ $i }}" value="{{ \App\Models\SiteSetting::get('stats_count_'.$i) }}" style="width:100%;padding:.5rem .75rem;border:1.5px solid #E4E6F0;border-radius:6px;font-size:.8rem">
+            </div>
+            <div>
+              <label style="display:block;font-size:.6rem;text-transform:uppercase;color:#8B90A0;margin-bottom:.25rem">Label (e.g. Talents Represented)</label>
+              <input type="text" name="stats_label_{{ $i }}" value="{{ \App\Models\SiteSetting::get('stats_label_'.$i) }}" style="width:100%;padding:.5rem .75rem;border:1.5px solid #E4E6F0;border-radius:6px;font-size:.8rem">
+            </div>
+          </div>
+          @endfor
+        </div>
+        <button type="submit" style="display:inline-flex;align-items:center;gap:.4rem;padding:.55rem 1.25rem;background:linear-gradient(135deg,#8B5CF6,#7C3AED);color:#fff;font-size:.72rem;font-weight:600;border:none;border-radius:8px;cursor:pointer">
+          <svg style="width:.8rem;height:.8rem" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+          Save Stats Bar
+        </button>
+      </form>
+    </div>
+  </div>
+
   {{-- ── CLIENT LOGOS ── --}}
   <div style="background:#fff;border-radius:12px;border:1px solid #E4E6F0;overflow:hidden;margin-bottom:1.5rem">
     <div style="padding:1rem 1.25rem;border-bottom:1px solid #E4E6F0;display:flex;align-items:center;gap:.75rem;background:#06B6D40d">
@@ -163,6 +196,33 @@
         <button type="submit" style="display:inline-flex;align-items:center;gap:.4rem;padding:.55rem 1.25rem;background:linear-gradient(135deg,#22C55E,#16a34a);color:#fff;font-size:.72rem;font-weight:600;border:none;border-radius:8px;cursor:pointer">
           <svg style="width:.8rem;height:.8rem" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
           Save About Section
+        </button>
+      </form>
+    </div>
+  </div>
+
+  {{-- ── SERVICES / WHAT WE OFFER ── --}}
+  <div style="background:#fff;border-radius:12px;border:1px solid #E4E6F0;overflow:hidden;margin-bottom:1.5rem">
+    <div style="padding:1rem 1.25rem;border-bottom:1px solid #E4E6F0;display:flex;align-items:center;gap:.75rem;background:#3B82F60d">
+      <div style="width:10px;height:10px;border-radius:50%;background:#3B82F6"></div>
+      <span style="font-size:.85rem;font-weight:600;color:#0B132B">What We Offer (Services)</span>
+    </div>
+    <div style="padding:1.5rem">
+      <form method="POST" action="{{ route('admin.homepage.section.update','services') }}">
+        @csrf
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
+          <div>
+            <label style="display:block;font-size:.65rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#5E6472;margin-bottom:.4rem">Section Heading</label>
+            <input type="text" name="heading" value="{{ $sections['services']->heading ?? 'Production Excellence' }}" style="width:100%;padding:.625rem .875rem;border:1.5px solid #E4E6F0;border-radius:8px;font-size:.85rem;color:#0B132B">
+          </div>
+          <div>
+            <label style="display:block;font-size:.65rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#5E6472;margin-bottom:.4rem">Sub Label</label>
+            <input type="text" name="subheading" value="{{ $sections['services']->subheading ?? 'What We Offer' }}" style="width:100%;padding:.625rem .875rem;border:1.5px solid #E4E6F0;border-radius:8px;font-size:.85rem;color:#0B132B">
+          </div>
+        </div>
+        <button type="submit" style="display:inline-flex;align-items:center;gap:.4rem;padding:.55rem 1.25rem;background:linear-gradient(135deg,#3B82F6,#2563EB);color:#fff;font-size:.72rem;font-weight:600;border:none;border-radius:8px;cursor:pointer">
+          <svg style="width:.8rem;height:.8rem" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+          Save Services Header
         </button>
       </form>
     </div>

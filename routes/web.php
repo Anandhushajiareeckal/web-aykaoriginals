@@ -16,8 +16,10 @@ use App\Http\Controllers\Admin\AdminBlogController;
 use App\Http\Controllers\Admin\AdminGalleryController;
 use App\Http\Controllers\Admin\AdminServiceController;
 use App\Http\Controllers\Admin\AdminPageController;
-use App\Http\Controllers\Admin\AdminSettingController;
 use App\Http\Controllers\Admin\AdminHomepageController;
+use App\Http\Controllers\Admin\AdminAboutController;
+use App\Http\Controllers\Admin\AdminServiceBuilderController;
+use App\Http\Controllers\Admin\AdminSettingController;
 use App\Http\Controllers\Admin\AdminModelController;
 use App\Http\Controllers\Model\ModelAuthController;
 use App\Http\Controllers\Model\ModelDashboardController;
@@ -35,6 +37,8 @@ Route::get('/login', function() {
     return redirect()->route('model.login');
 })->name('login');
 
+use App\Http\Controllers\AboutController;
+
 // PUBLIC (tracked)
 Route::middleware('track.views')->group(function() {
     Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -47,7 +51,8 @@ Route::middleware('track.views')->group(function() {
     Route::get('/blog/{post:slug}', [BlogController::class, 'show'])->name('blog.show');
     Route::get('/gallery', [GalleryController::class, 'index'])->name('gallery.index');
     Route::get('/services', [ServiceController::class, 'index'])->name('services.index');
-    Route::get('/about', [PageController::class, 'show'])->defaults('slug','about')->name('about');
+    Route::get('/services/{slug}', [ServiceController::class, 'show'])->name('services.show');
+    Route::get('/about', [AboutController::class, 'index'])->name('about');
     Route::get('/pages/{slug}', [PageController::class, 'show'])->name('page.show');
 });
 Route::get('/contact', [InquiryController::class, 'create'])->name('inquiries.create');
@@ -70,6 +75,23 @@ Route::prefix('admin')->name('admin.')->middleware('admin.auth')->group(function
     Route::post('/homepage/section/{key}', [AdminHomepageController::class, 'updateSection'])->name('homepage.section.update');
     Route::post('/homepage/clients', [AdminHomepageController::class, 'storeClient'])->name('homepage.clients.store');
     Route::delete('/homepage/clients/{client}', [AdminHomepageController::class, 'destroyClient'])->name('homepage.clients.destroy');
+
+    // About Builder
+    Route::get('/about-builder', [AdminAboutController::class, 'index'])->name('about.index');
+    Route::post('/about-builder/section/{key}', [AdminAboutController::class, 'updateSection'])->name('about.section.update');
+
+    // Service Page Builder
+    Route::get('/service-builder', [AdminServiceBuilderController::class, 'index'])->name('service-builder.index');
+    Route::post('/service-builder/section/{key}', [AdminServiceBuilderController::class, 'updateSection'])->name('service-builder.section.update');
+
+    // Talent Builder Admin
+    Route::get('/talent-builder', [\App\Http\Controllers\Admin\AdminTalentBuilderController::class, 'index'])->name('talent-builder.index');
+    Route::post('/talent-builder/section/{key}', [\App\Http\Controllers\Admin\AdminTalentBuilderController::class, 'updateSection'])->name('talent-builder.section.update');
+
+    // Work Page Builder Admin
+    Route::get('/work-builder', [\App\Http\Controllers\Admin\AdminWorkBuilderController::class, 'index'])->name('work-builder.index');
+    Route::post('/work-builder/section/{key}', [\App\Http\Controllers\Admin\AdminWorkBuilderController::class, 'updateSection'])->name('work-builder.update');
+
 
     Route::get('/talent',               [AdminTalentController::class, 'index'])->name('talent.index');
     Route::get('/talent/create',        [AdminTalentController::class, 'create'])->name('talent.create');

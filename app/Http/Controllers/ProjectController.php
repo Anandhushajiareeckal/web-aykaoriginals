@@ -4,7 +4,8 @@ use App\Models\Project;
 class ProjectController extends Controller {
     public function index() {
         $projects = Project::active()->with('media')->orderByDesc('year')->paginate(12);
-        return view('projects.index', compact('projects'));
+        $sections = \App\Models\WorkSection::all()->keyBy('section_key');
+        return view('projects.index', compact('projects', 'sections'));
     }
     public function show(Project $project) {
         abort_unless($project->is_active, 404);

@@ -32,10 +32,14 @@
     <div class="flex gap-3">
       <button type="submit" class="admin-btn">{{ $project ? 'Update Project' : 'Create Project' }}</button>
       <a href="{{ route('admin.projects.index') }}" class="admin-btn-ghost">Cancel</a>
-      @if($project)
-      <form method="POST" action="{{ route('admin.projects.destroy',$project) }}" style="margin-left:auto" onsubmit="return confirm('Delete?')">@csrf @method('DELETE')<button type="submit" class="admin-btn-danger">Delete</button></form>
-      @endif
     </div>
   </form>
+
+  @if($project)
+  <form method="POST" action="{{ route('admin.projects.destroy',$project) }}" style="margin-top:-2.2rem;display:flex;justify-content:flex-end" onsubmit="return confirm('Delete?')">
+    @csrf @method('DELETE')
+    <button type="submit" class="admin-btn-danger">Delete</button>
+  </form>
+  @endif
 </div>
 @endsection

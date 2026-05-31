@@ -12,6 +12,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   @vite(['resources/css/app.css','resources/js/app.js'])
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  @stack('styles')
 </head>
 <body class="antialiased" style="font-family:'Montserrat',sans-serif;background:#fff;color:#0B132B">
 
@@ -76,13 +77,9 @@
           <svg style="width:.6rem;height:.6rem;opacity:.6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
         </span>
         <div class="nav-dropdown">
-          <a href="{{ route('model.index') }}">Models</a>
-          <a href="{{ route('talent.index') }}">Talents</a>
+          <a href="{{ route('talent.index') }}">Talent</a>
           <a href="{{ route('projects.index') }}">Production</a>
         </div>
-      </div>
-      <div class="nav-item">
-        <a href="{{ route('projects.index') }}" class="nav-a {{ request()->routeIs('projects.*') ? 'active' : '' }}">Work</a>
       </div>
       <div class="nav-item">
         <a href="{{ route('blog.index') }}" class="nav-a {{ request()->routeIs('blog.*') ? 'active' : '' }}">Journal</a>
@@ -107,11 +104,10 @@
     <div>
       <span class="mobile-nav-a" style="display:block">Requirement</span>
       <div class="mobile-sub">
-        <a href="{{ route('talent.index') }}" @click="open=false">Talents</a>
+        <a href="{{ route('talent.index') }}" @click="open=false">Talent</a>
         <a href="{{ route('projects.index') }}" @click="open=false">Production</a>
       </div>
     </div>
-    <a href="{{ route('projects.index') }}" class="mobile-nav-a" @click="open=false">Work</a>
     <a href="{{ route('blog.index') }}" class="mobile-nav-a" @click="open=false">Journal</a>
     <a href="{{ route('gallery.index') }}" class="mobile-nav-a" @click="open=false">Gallery</a>
     <a href="{{ route('inquiries.create') }}" class="mobile-nav-a" style="color:#fff;margin-top:1rem;padding:1rem 1.5rem;border:1px solid rgba(255,255,255,.3);text-align:center" @click="open=false">Contact Us</a>
@@ -139,6 +135,13 @@
           @foreach([['Home',route('home')],['About',route('about')],['Services',route('services.index')],['Talent',route('talent.index')],['Work',route('projects.index')],['Journal',route('blog.index')],['Gallery',route('gallery.index')]] as $l)
           <a href="{{ $l[1] }}" style="font-size:.85rem;color:rgba(255,255,255,.45);transition:all .3s; display:inline-block; width:fit-content;" onmouseover="this.style.color='#fff'; this.style.transform='translateX(5px)';" onmouseout="this.style.color='rgba(255,255,255,.45)'; this.style.transform='translateX(0)';">{{ $l[0] }}</a>
           @endforeach
+        </div>
+      </div>
+      <div>
+        <p style="font-size:.65rem;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:1.5rem">Legal</p>
+        <div style="display:flex;flex-direction:column;gap:1rem">
+          <a href="{{ route('page.show','privacy-policy') }}" style="font-size:.85rem;color:rgba(255,255,255,.45);transition:all .3s; display:inline-block; width:fit-content;" onmouseover="this.style.color='#fff'; this.style.transform='translateX(5px)';" onmouseout="this.style.color='rgba(255,255,255,.45)'; this.style.transform='translateX(0)';">Privacy Policy</a>
+          <a href="{{ route('page.show','terms-conditions') }}" style="font-size:.85rem;color:rgba(255,255,255,.45);transition:all .3s; display:inline-block; width:fit-content;" onmouseover="this.style.color='#fff'; this.style.transform='translateX(5px)';" onmouseout="this.style.color='rgba(255,255,255,.45)'; this.style.transform='translateX(0)';">Terms &amp; Conditions</a>
         </div>
       </div>
       <div>

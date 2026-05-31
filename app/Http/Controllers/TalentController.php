@@ -1,12 +1,14 @@
 <?php
 namespace App\Http\Controllers;
 use App\Models\Talent;
+use App\Models\TalentSection;
 use Illuminate\Http\Request;
 class TalentController extends Controller {
     public function index(Request $request) {
         $talents    = Talent::talents()->active()->with('media')->filter($request->only(['gender','category','location']))->orderBy('name')->paginate(16)->withQueryString();
         $categories = Talent::talents()->active()->distinct()->pluck('category')->filter()->sort()->values();
-        return view('talent.index', compact('talents','categories'));
+        $sections   = TalentSection::all()->keyBy('section_key');
+        return view('talent.index', compact('talents','categories','sections'));
     }
 
     public function modelsIndex(Request $request) {

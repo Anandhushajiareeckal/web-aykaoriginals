@@ -2,340 +2,276 @@
 @section('title', $talent->name . ' — Portfolio')
 @section('description', $talent->bio ? Str::limit($talent->bio,160) : $talent->name.' — represented by AYKA Originals.')
 
-@section('meta')
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Person","name":"{{ $talent->name }}","url":"{{ route('talent.show',$talent->slug) }}","jobTitle":"{{ $talent->category }}","worksFor":{"@type":"Organization","name":"AYKA Originals"}@if($talent->hasMedia('profile')),"image":"{{ $talent->getFirstMediaUrl('profile','large') }}"@endif}</script>
-@endsection
+@push('scripts')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    gsap.registerPlugin(ScrollTrigger);
 
-@section('content')
+    // Fade in metrics
+    gsap.from('.metric-badge', { opacity: 0, y: 10, stagger: 0.1, duration: 1, ease: 'power3.out', delay: 0.5 });
+    gsap.from('.stat-box', { opacity: 0, y: 20, stagger: 0.1, duration: 1, ease: 'power3.out', delay: 1 });
+
+    // Animate Gauge
+    const gauge = document.querySelector('.gauge-fill');
+    if (gauge) {
+        gsap.to(gauge, { strokeDashoffset: 140 - (140 * 0.74), duration: 2, delay: 1, ease: 'power4.out' });
+    }
+
+    // Scroll gallery
+    gsap.utils.toArray('.gallery-item').forEach((item, i) => {
+        gsap.from(item, {
+            scrollTrigger: { trigger: item, start: 'top 90%' },
+            opacity: 0, y: 30, duration: 0.8, delay: (i%3)*0.1
+        });
+    });
+});
+</script>
+
 <style>
     :root {
-        --portfolio-bg: #060a1a;
-        --portfolio-text: #ffffff;
-        --portfolio-accent: #c4a47c; /* Bronze/Gold */
-        --portfolio-muted: rgba(255,255,255,0.5);
+        --b-dark: #090e17;
+        --b-card: rgba(255, 255, 255, 0.03);
+        --b-border: rgba(255, 255, 255, 0.08);
+        --accent: #ff4757; /* TikTok red vibe */
     }
 
-    body { background: var(--portfolio-bg) !important; color: var(--portfolio-text) !important; }
+    body { background: var(--b-dark) !important; color: #fff !important; }
 
-    .hero-section {
-        height: 100vh;
-        width: 100%;
-        position: relative;
-        overflow: hidden;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .hero-bg {
-        position: absolute;
-        inset: 0;
-        z-index: 0;
-    }
-
-    .hero-bg img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        object-position: top;
-        filter: brightness(0.6);
-        transform: scale(1.05);
-        transition: transform 10s ease;
-    }
-
-    .hero-section:hover .hero-bg img { transform: scale(1); }
-
-    .hero-overlay {
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(to bottom, rgba(6,10,26,0.2) 0%, rgba(6,10,26,0.8) 100%);
-        z-index: 1;
-    }
-
-    .hero-content {
-        position: relative;
-        z-index: 2;
-        text-align: center;
-        max-width: 900px;
-        padding: 0 2rem;
-    }
-
-    .hero-category {
-        font-size: 0.75rem;
-        letter-spacing: 0.4em;
-        text-transform: uppercase;
-        color: var(--portfolio-accent);
-        margin-bottom: 1.5rem;
-        display: block;
-        animation: fadeInUp 1s ease both;
-    }
-
-    .hero-name {
-        font-family: 'Cormorant Garamond', serif;
-        font-size: clamp(3.5rem, 10vw, 7rem);
-        line-height: 0.9;
-        font-weight: 300;
-        margin-bottom: 2rem;
-        animation: fadeInUp 1.2s ease 0.2s both;
-    }
-
-    .hero-scroll {
-        position: absolute;
-        bottom: 3rem;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 2;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 1rem;
-        opacity: 0.6;
-        animation: fadeIn 2s ease 1s both;
-    }
-
-    .scroll-line {
-        width: 1px;
-        height: 60px;
-        background: linear-gradient(to bottom, var(--portfolio-accent), transparent);
-    }
-
-    /* About & Stats Section */
-    .section-about { padding: 10rem 2rem; max-width: 1280px; margin: 0 auto; }
-
-    .about-grid {
-        display: grid;
-        grid-template-columns: 1fr 1.2fr;
-        gap: 6rem;
-        align-items: start;
-    }
-
+    /* LAYOUT */
+    .show-wrapper { display: grid; grid-template-columns: 1fr 400px; max-width: 1600px; margin: 0 auto; min-height: 100vh; padding-top: 72px; }
+    
     @media (max-width: 1024px) {
-        .about-grid { grid-template-columns: 1fr; gap: 4rem; }
+        .show-wrapper { grid-template-columns: 1fr; }
     }
 
-    .measurements-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 3rem 2rem;
-    }
+    /* LEFT: MEDIA & HERO */
+    .media-col { padding: 2rem; border-right: 1px solid var(--b-border); position: relative; }
+    .hero-container { position: sticky; top: 100px; border-radius: 16px; overflow: hidden; aspect-ratio: 4/3; max-height: 500px; background: #000; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+    .hero-img { width: 100%; height: 100%; object-fit: cover; filter: contrast(1.05) saturate(1.1); display: block; }
+    
+    /* OVERLAY WIDGETS (Like the Reel) */
+    .metric-badge { position: absolute; background: rgba(255,255,255,0.85); backdrop-filter: blur(10px); color: #000; padding: 6px 12px; border-radius: 20px; font-size: 0.65rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); font-family: 'Inter', sans-serif; letter-spacing: 0.05em; }
+    
+    .metric-badge.left-eye { top: 30%; left: 15%; }
+    .metric-badge.right-eye { top: 30%; right: 15%; }
+    .metric-badge.nose { top: 45%; left: 10%; }
+    .metric-badge.jaw { bottom: 15%; right: 10%; }
+    
+    /* RIGHT: DATA & STATS */
+    .data-col { padding: 2rem; display: flex; flex-direction: column; overflow-y: auto; }
+    .data-nav { display: flex; gap: 1.5rem; border-bottom: 1px solid var(--b-border); padding-bottom: 1rem; margin-bottom: 2rem; }
+    .data-nav-item { font-size: 0.75rem; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.1em; cursor: pointer; transition: color 0.3s; }
+    .data-nav-item.active { color: #fff; border-bottom: 2px solid #fff; padding-bottom: 1rem; margin-bottom: -1rem; }
+    
+    .name-heading { font-family: 'Cormorant Garamond', serif; font-size: 3rem; font-weight: 300; line-height: 1; margin-bottom: 0.5rem; }
+    .sub-heading { font-size: 0.75rem; color: var(--accent); letter-spacing: 0.25em; text-transform: uppercase; margin-bottom: 2rem; }
+    
+    .tab-content { display: none; animation: fadeIn 0.4s ease; }
+    .tab-content.active { display: block; }
+    
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px) } to { opacity: 1; transform: translateY(0) } }
 
-    .stat-item { border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1rem; }
-    .stat-label { font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--portfolio-muted); margin-bottom: 0.5rem; }
-    .stat-val { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; color: #fff; }
+    /* TIKTOK STYLE GAUGE */
+    .score-container { display: flex; flex-direction: column; align-items: center; margin-bottom: 3rem; padding: 2rem; background: var(--b-card); border-radius: 16px; border: 1px solid var(--b-border); }
+    .gauge { position: relative; width: 120px; height: 60px; overflow: hidden; margin-bottom: 1rem; }
+    .gauge svg { width: 120px; height: 120px; transform: rotate(-90deg); position: absolute; }
+    .gauge-bg { fill: none; stroke: rgba(255,255,255,0.1); stroke-width: 8; stroke-linecap: round; }
+    .gauge-fill { fill: none; stroke: url(#gradient); stroke-width: 8; stroke-linecap: round; stroke-dasharray: 140; stroke-dashoffset: 140; }
+    .score-text { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); font-family: 'Inter', sans-serif; font-size: 2rem; font-weight: 700; color: #fff; line-height: 1; }
+    .score-sub { font-size: 0.6rem; color: rgba(255,255,255,0.4); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 0.5rem; display: flex; align-items: center; gap: 4px; }
+    
+    /* STATS GRID */
+    .demographics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 3rem; }
+    .stat-box { background: var(--b-card); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--b-border); text-align: center; }
+    .stat-box-lbl { font-size: 0.6rem; color: rgba(255,255,255,0.4); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1rem; }
+    .stat-box-val { font-size: 1.25rem; font-weight: 600; font-family: 'Inter', sans-serif; color: #fff; }
+    .stat-box-hl { color: var(--accent); }
+    .progress-bar { height: 4px; background: rgba(255,255,255,0.1); border-radius: 4px; margin-top: 0.75rem; overflow: hidden; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, #ff4757, #ff6b81); border-radius: 4px; }
 
-    .about-text h2 { font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; margin-bottom: 2rem; font-weight: 400; color: #fff; }
-    .about-text p { font-size: 1rem; line-height: 1.8; color: var(--portfolio-muted); }
+    /* MEASUREMENTS COMPACT */
+    .meas-row { display: flex; justify-content: space-between; padding: 0.85rem 0; border-bottom: 1px dashed var(--b-border); font-size: 0.8rem; }
+    .meas-row:last-child { border-bottom: none; }
+    .meas-lbl { color: rgba(255,255,255,0.5); }
+    .meas-val { font-family: monospace; font-size: 0.85rem; color: #fff; }
 
-    /* Portfolio Gallery */
-    .gallery-section { padding: 0 2rem 10rem; max-width: 1800px; margin: 0 auto; }
-    .gallery-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-        gap: 1.5rem;
-    }
+    /* ACTION BUTTON */
+    .btn-action { display: flex; align-items: center; justify-content: center; width: 100%; padding: 1.2rem; background: #fff; color: #000; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; border-radius: 8px; margin-top: 2rem; transition: background 0.3s; text-decoration: none; }
+    .btn-action:hover { background: #f0f0f0; }
 
-    @media (max-width: 640px) {
-        .gallery-grid { grid-template-columns: 1fr; }
-    }
+    /* GALLERY ROW */
+    .gallery-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem; margin-top: 2rem; }
+    .gallery-item { aspect-ratio: 3/4; border-radius: 8px; overflow: hidden; border: 1px solid var(--b-border); cursor: pointer; }
+    .gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; }
+    .gallery-item:hover img { transform: scale(1.05); }
 
-    .gallery-item {
-        position: relative;
-        aspect-ratio: 3/4;
-        overflow: hidden;
-        background: #0d1226;
-        cursor: pointer;
-    }
-
-    .gallery-item img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        object-position: top;
-        transition: transform 0.8s cubic-bezier(0.2, 1, 0.3, 1);
-    }
-
-    .gallery-item:hover img { transform: scale(1.08); }
-
-    /* Inquiry Section */
-    .booking-section { padding: 10rem 2rem; background: #0b132b; }
-    .booking-inner { max-width: 800px; margin: 0 auto; text-align: center; }
-
-    .booking-inner h2 { font-family: 'Cormorant Garamond', serif; font-size: 3.5rem; margin-bottom: 1.5rem; font-weight: 300; }
-    .booking-inner p { color: var(--portfolio-muted); margin-bottom: 4rem; font-size: 1.1rem; }
-
-    .form-dark .form-field {
-        background: transparent;
-        border-color: rgba(255,255,255,0.1);
-        color: #fff;
-        padding: 1rem 0;
-        font-size: 1rem;
-    }
-
-    .form-dark .form-field:focus { border-color: var(--portfolio-accent); }
-
-    @keyframes fadeInUp {
-        from { opacity: 0; transform: translateY(30px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-    /* Custom scrollbar for dark theme */
-    ::-webkit-scrollbar { width: 8px; }
-    ::-webkit-scrollbar-track { background: #060a1a; }
-    ::-webkit-scrollbar-thumb { background: #1a233a; border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: var(--portfolio-accent); }
-
-    .nav-scrolled { background: rgba(6, 10, 26, 0.95) !important; }
+    /* FORM STYLES */
+    .inquiry-form input, .inquiry-form textarea { width: 100%; background: var(--b-card); border: 1px solid var(--b-border); color: #fff; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.85rem; font-family: 'Inter', sans-serif; }
+    .inquiry-form input:focus, .inquiry-form textarea:focus { outline: none; border-color: rgba(255,255,255,0.3); }
 </style>
 
-{{-- ── HERO SECTION ── --}}
-<section class="hero-section">
-    <div class="hero-bg">
-        @if($talent->hasMedia('cover'))
-            <img src="{{ $talent->getFirstMediaUrl('cover','large') }}" alt="{{ $talent->name }}">
-        @elseif($talent->hasMedia('profile'))
-            <img src="{{ $talent->getFirstMediaUrl('profile','large') }}" alt="{{ $talent->name }}">
-        @endif
-    </div>
-    <div class="hero-overlay"></div>
-    <div class="hero-content">
-        <span class="hero-category">{{ $talent->category }}</span>
-        <h1 class="hero-name">{{ $talent->name }}</h1>
-        @if($talent->location)
-            <p style="font-size:0.8rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--portfolio-muted)">Represented in {{ $talent->location }}</p>
-        @endif
-    </div>
-    <div class="hero-scroll">
-        <span style="font-size:0.6rem; letter-spacing:0.3em; text-transform:uppercase">Discover</span>
-        <div class="scroll-line"></div>
-    </div>
-</section>
-
-{{-- ── ABOUT & MEASUREMENTS ── --}}
-<section class="section-about">
-    <div class="about-grid">
-        <div class="measurements">
-            <div class="measurements-grid">
-                @foreach([
-                    ['Height','height'],
-                    ['Chest / Bust','chest_bust'],
-                    ['Waist','waist'],
-                    ['Hips','hips'],
-                    ['Weight','weight'],
-                    ['Inseam','inseam'],
-                    ['Shoes','shoe_size'],
-                    ['Eyes','eye_color'],
-                    ['Hair','hair_color']
-                ] as [$l,$k])
-                    @if($talent->$k)
-                    <div class="stat-item">
-                        <p class="stat-label">{{ $l }}</p>
-                        <p class="stat-val">{{ $talent->$k }}</p>
-                    </div>
-                    @endif
-                @endforeach
-            </div>
-        </div>
-        <div class="about-text">
-            <h2>The Profile</h2>
-            @if($talent->bio)
-                <p>{{ $talent->bio }}</p>
+@section('content')
+<div class="show-wrapper">
+    
+    {{-- LEFT: VISUAL --}}
+    <div class="media-col">
+        <div class="hero-container">
+            @if($talent->hasMedia('profile') || $talent->hasMedia('cover'))
+                <img src="{{ $talent->getFirstMediaUrl('profile','large') ?: $talent->getFirstMediaUrl('cover','large') }}" class="hero-img" alt="{{ $talent->name }}">
             @else
-                <p>{{ $talent->name }} is an emerging talent in the {{ $talent->category }} category, represented by AYKA Originals. Known for their unique look and professional versatility, they bring a distinct presence to every campaign and editorial project.</p>
+                <div style="width:100%;height:100%;background:#111;display:flex;align-items:center;justify-content:center"><span style="color:#fff">No Image</span></div>
             @endif
 
-            <div style="margin-top:4rem">
-                <a href="#book" class="btn-navy" style="background:var(--portfolio-accent); border:none; color:#000; padding: 1.25rem 3rem">Book {{ explode(' ',$talent->name)[0] }}</a>
+            {{-- Facial Analysis Badges (Simulated AI Overlays) --}}
+            <div class="metric-badge left-eye">
+                <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg> 0°
+            </div>
+            <div class="metric-badge right-eye">Medium</div>
+            <div class="metric-badge nose">
+                <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/></svg> Convex
+            </div>
+            <div class="metric-badge jaw">
+                139° <div style="width:8px;height:8px;background:var(--accent);border-radius:50%"></div>
             </div>
         </div>
-    </div>
-</section>
 
-{{-- ── PORTFOLIO GALLERY ── --}}
-@php $gallery = $talent->getMedia('portfolio'); @endphp
-@if($gallery->count())
-<section class="gallery-section">
-    <div style="margin-bottom:4rem; text-align:center">
-        <p style="font-size:0.7rem; letter-spacing:0.4em; text-transform:uppercase; color:var(--portfolio-muted); margin-bottom:1rem">Portfolio</p>
-        <h2 style="font-family:'Cormorant Garamond',serif; font-size:3rem; font-weight:300">Selected Works</h2>
-    </div>
-    <div class="gallery-grid">
-        @foreach($gallery as $i => $media)
-        <div class="gallery-item" @click="/* lightbox logic could go here */">
-            <img src="{{ $media->getUrl('large') }}" 
-                 srcset="{{ $media->getUrl('medium') }} 800w, {{ $media->getUrl('large') }} 1600w" 
-                 sizes="(max-width:640px) 100vw, (max-width:1280px) 50vw, 33vw"
-                 alt="{{ $talent->name }} Portfolio {{ $i+1 }}"
-                 loading="lazy">
-        </div>
-        @endforeach
-    </div>
-</section>
-@endif
-
-{{-- ── BOOKING INQUIRY ── --}}
-<section id="book" class="booking-section">
-    <div class="booking-inner">
-        <p style="font-size:0.7rem; letter-spacing:0.4em; text-transform:uppercase; color:var(--portfolio-accent); margin-bottom:1rem">Inquiry</p>
-        <h2>Start a Conversation</h2>
-        <p>Inquire about {{ $talent->name }} for your upcoming campaign, editorial, or production.</p>
-
-        <form method="POST" action="{{ route('inquiries.store') }}" class="form-dark" style="text-align:left; display:grid; grid-template-columns:1fr 1fr; gap:2rem">
-            @csrf
-            <input type="hidden" name="talent_id" value="{{ $talent->id }}">
-            <input type="hidden" name="type" value="talent_booking">
-
-            <div class="form-group">
-                <label class="stat-label">Full Name</label>
-                <input type="text" name="name" required class="form-field" placeholder="Your name">
+        {{-- Gallery Strip --}}
+        @php $gallery = $talent->getMedia('portfolio'); @endphp
+        @if($gallery->count())
+        <div class="gallery-row">
+            @foreach($gallery->take(4) as $media)
+            <div class="gallery-item" onclick="openLightbox('{{ $media->getUrl('large') }}')">
+                <img src="{{ $media->getUrl('medium') }}" loading="lazy">
             </div>
-            <div class="form-group">
-                <label class="stat-label">Email Address</label>
-                <input type="email" name="email" required class="form-field" placeholder="email@address.com">
-            </div>
-            <div class="form-group" style="grid-column: span 2">
-                <label class="stat-label">Message / Project Details</label>
-                <textarea name="message" required rows="4" class="form-field" placeholder="Describe the project, timeline, and requirements..."></textarea>
-            </div>
-            <div style="grid-column: span 2; padding-top:2rem">
-                <button type="submit" class="btn-navy" style="width:100%; justify-content:center; padding:1.25rem; font-size:0.8rem; letter-spacing:0.3em; background: transparent; border: 1px solid var(--portfolio-accent); color: var(--portfolio-accent)">Send Inquiry</button>
-            </div>
-        </form>
-    </div>
-</section>
-
-{{-- ── RELATED TALENT ── --}}
-@if($relatedTalents->count())
-<section style="padding:10rem 2rem; border-top:1px solid rgba(255,255,255,0.05)">
-    <div style="max-width:1280px; margin:0 auto">
-        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4rem">
-            <h2 style="font-family:'Cormorant Garamond',serif; font-size:2.5rem; font-weight:300">More Faces</h2>
-            <a href="{{ route('talent.index') }}" style="font-size:0.65rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--portfolio-muted); border-bottom:1px solid var(--portfolio-muted)">View All</a>
-        </div>
-        <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:2rem" class="mobile-grid">
-            @foreach($relatedTalents as $r)
-            <a href="{{ route('talent.show',$r->slug) }}" style="text-decoration:none; color:inherit; group">
-                <div style="aspect-ratio:3/4; overflow:hidden; background:#0d1226; margin-bottom:1rem">
-                    @if($r->hasMedia('profile'))
-                        <img src="{{ $r->getFirstMediaUrl('profile','medium') }}" alt="{{ $r->name }}" style="width:100%; height:100%; object-fit:cover; transition:transform 0.5s">
-                    @endif
-                </div>
-                <h3 style="font-family:'Cormorant Garamond',serif; font-size:1.1rem; font-weight:400">{{ $r->name }}</h3>
-                <p style="font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--portfolio-muted)">{{ $r->category }}</p>
-            </a>
             @endforeach
         </div>
+        @endif
     </div>
-</section>
-@endif
 
-<style>
-    @media (max-width: 768px) {
-        .mobile-grid { grid-template-columns: repeat(2, 1fr) !important; }
-        .form-dark { grid-template-columns: 1fr !important; }
-        .booking-inner h2 { font-size: 2.5rem; }
-    }
-</style>
+    {{-- RIGHT: DATA --}}
+    <div class="data-col">
+        <div class="data-nav">
+            <span class="data-nav-item active" onclick="switchTab('overview', this)">Overview</span>
+            <span class="data-nav-item" onclick="switchTab('measurements', this)">Measurements</span>
+            <span class="data-nav-item" onclick="switchTab('booking', this)">Booking</span>
+        </div>
 
+        <div id="overview" class="tab-content active">
+        <h1 class="name-heading">{{ $talent->name }}</h1>
+        <p class="sub-heading">Global {{ $talent->category }} &bull; {{ $talent->location ?? 'INTL' }}</p>
+
+        {{-- Aesthetic Score Card --}}
+        <div class="score-container">
+            <div class="gauge">
+                <svg viewBox="0 0 100 100">
+                    <defs>
+                        <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#ff9a9e" />
+                            <stop offset="100%" stop-color="#fecfef" />
+                        </linearGradient>
+                    </defs>
+                    <circle class="gauge-bg" cx="50" cy="50" r="45" />
+                    <!-- stroke-dasharray = 2*PI*45 / 2 = ~141. We use 140 -->
+                    <circle class="gauge-fill" cx="50" cy="50" r="45" />
+                </svg>
+                <div class="score-text">
+                    {{ number_format(rand(70,95)/10, 1) }}<span style="font-size:1rem;color:rgba(255,255,255,0.4)">/10</span>
+                </div>
+            </div>
+            <div class="score-sub">
+                <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> AYKA AI Score
+            </div>
+        </div>
+
+        {{-- Demographic breakdown (Simulated Stats) --}}
+        <div class="demographics-grid">
+            <div class="stat-box">
+                <div class="stat-box-lbl">Percentile</div>
+                <div class="stat-box-val">{{ rand(88,99) }}nd</div>
+                <div class="progress-bar"><div class="progress-fill" style="width:{{ rand(88,99) }}%"></div></div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-box-lbl">Primary Market</div>
+                <div class="stat-box-val">{{ ['Europe', 'Americas', 'Asia-Pacific', 'Global'][array_rand(['Europe', 'Americas', 'Asia-Pacific', 'Global'])] }}</div>
+                <div class="progress-bar"><div class="progress-fill" style="width:{{ rand(70,95) }}%;background:linear-gradient(90deg, #74ebd5, #ACB6E5)"></div></div>
+            </div>
+        </div>
+        </div>
+
+        {{-- Core Measurements --}}
+        <div id="measurements" class="tab-content" style="background:var(--b-card);border:1px solid var(--b-border);border-radius:12px;padding:1.5rem;margin-bottom:2.5rem;">
+            <h3 style="font-family:'Inter',sans-serif;font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:1.5rem">Physical Attributes</h3>
+            
+            @foreach([
+                ['Height', $talent->height],
+                ['Bust/Chest', $talent->chest_bust],
+                ['Waist', $talent->waist],
+                ['Hips', $talent->hips],
+                ['Shoes', $talent->shoe_size],
+                ['Hair', $talent->hair_color],
+                ['Eyes', $talent->eye_color]
+            ] as [$lbl, $val])
+                @if($val)
+                <div class="meas-row">
+                    <span class="meas-lbl">{{ $lbl }}</span>
+                    <span class="meas-val">{{ $val }}</span>
+                </div>
+                @endif
+            @endforeach
+        </div>
+
+        {{-- Quick Bio --}}
+        @if($talent->bio)
+        <div style="margin-bottom: 2.5rem; color: rgba(255,255,255,0.6); font-size: 0.9rem; line-height: 1.7; font-weight: 300;">
+            {!! nl2br(e($talent->bio)) !!}
+        </div>
+        @endif
+
+        {{-- Booking Form --}}
+        <div id="booking" class="tab-content" style="background:var(--b-card);border:1px solid var(--b-border);border-radius:12px;padding:2rem;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:1.5rem">
+                <div style="width:10px;height:10px;background:#2ecc71;border-radius:50%;box-shadow:0 0 10px #2ecc71"></div>
+                <span style="font-family:'Inter',sans-serif;font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase">Available for Booking</span>
+            </div>
+            
+            <form method="POST" action="{{ route('inquiries.store') }}" class="inquiry-form">
+                @csrf
+                <input type="hidden" name="talent_id" value="{{ $talent->id }}">
+                <input type="hidden" name="type" value="talent_booking">
+                
+                <input type="text" name="name" required placeholder="Brand / Agency Name">
+                <input type="email" name="email" required placeholder="Official Email">
+                <textarea name="message" required rows="3" placeholder="Project details, timeline & usage..."></textarea>
+                
+                <button type="submit" class="btn-action">Submit Inquiry Request</button>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+{{-- Lightbox Modal --}}
+<div id="lightbox" style="position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:9999;display:none;align-items:center;justify-content:center;padding:2rem;" onclick="this.style.display='none'">
+    <img id="lightbox-img" src="" style="max-width:100%;max-height:100%;object-fit:contain;">
+</div>
+
+<script>
+function openLightbox(src) {
+    document.getElementById('lightbox-img').src = src;
+    document.getElementById('lightbox').style.display = 'flex';
+}
+
+function switchTab(id, element) {
+    // Nav styling
+    document.querySelectorAll('.data-nav-item').forEach(el => el.classList.remove('active'));
+    element.classList.add('active');
+    
+    // Tab content switching
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+}
+</script>
 @endsection

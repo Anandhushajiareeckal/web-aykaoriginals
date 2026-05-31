@@ -86,12 +86,19 @@
 
 {{-- ══════════ STATS BAR ══════════ --}}
 <section style="background:#0B132B;padding:2rem">
-  <div style="max-width:1280px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:0;text-align:center">
-    @foreach([[$talentCount.'+','Talents Represented'],[$projectCount.'+','Campaigns Produced'],['12+','Countries'],['2024','Est.']] as $s)
-    <div style="padding:1.5rem;border-right:1px solid rgba(255,255,255,.07)">
+  <div style="max-width:1280px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:center;gap:0;text-align:center">
+    @foreach([
+      [\App\Models\SiteSetting::get('stats_count_1', $talentCount.'+'), \App\Models\SiteSetting::get('stats_label_1', 'Talents Represented')],
+      [\App\Models\SiteSetting::get('stats_count_2', $projectCount.'+'), \App\Models\SiteSetting::get('stats_label_2', 'Campaigns Produced')],
+      [\App\Models\SiteSetting::get('stats_count_3', '12+'), \App\Models\SiteSetting::get('stats_label_3', 'Countries')],
+      [\App\Models\SiteSetting::get('stats_count_4', '2024'), \App\Models\SiteSetting::get('stats_label_4', 'Est.')]
+    ] as $s)
+    @if($s[0] && $s[1])
+    <div style="padding:1.5rem 2.5rem;flex:1;min-width:200px;border-right:1px solid rgba(255,255,255,.07)">
       <p style="font-family:'Cormorant Garamond',serif;font-size:2.5rem;color:#fff;font-weight:400;line-height:1">{{ $s[0] }}</p>
       <p style="font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-top:.35rem">{{ $s[1] }}</p>
     </div>
+    @endif
     @endforeach
   </div>
 </section>
@@ -153,11 +160,11 @@
         <svg style="width:.875rem;height:.875rem" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
       </a>
     </div>
-    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:1.25rem" class="md:grid-cols-4 lg:grid-cols-5">
-      @foreach($talents->take(8) as $i => $talent)
+    <div style="display:flex;gap:1.5rem;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:1.5rem;scrollbar-width:thin">
+      @foreach($talents as $i => $talent)
       <a href="{{ route('talent.show',$talent->slug) }}"
-         style="display:block;position:relative;overflow:hidden;cursor:pointer"
-         class="talent-hover-card">
+         style="display:block;position:relative;overflow:hidden;cursor:pointer;flex:0 0 calc(70vw);max-width:320px;scroll-snap-align:start"
+         class="talent-hover-card md:flex-[0_0_calc(35vw)] xl:flex-[0_0_300px]">
         <div style="aspect-ratio:2/3;overflow:hidden;background:#F4F5FA;position:relative">
           @if($talent->hasMedia('profile'))
             <img src="{{ $talent->getFirstMediaUrl('profile','medium') }}" alt="{{ $talent->name }}"
@@ -224,11 +231,6 @@
           </div>
         @endif
       </div>
-      {{-- Floating card --}}
-      <div style="position:absolute;bottom:-2rem;left:-2rem;background:#fff;padding:1.5rem;box-shadow:0 20px 50px rgba(11,19,43,.15);min-width:180px">
-        <p style="font-family:'Cormorant Garamond',serif;font-size:2.5rem;color:#0B132B;font-weight:400">{{ $talentCount }}+</p>
-        <p style="font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:#8B90A0;margin-top:.25rem">Talents Represented</p>
-      </div>
     </div>
   </div>
 </section>
@@ -238,8 +240,8 @@
 <section style="padding:6rem 2rem;background:#0B132B">
   <div style="max-width:1280px;margin:0 auto">
     <div style="text-align:center;margin-bottom:4rem" data-animate>
-      <p style="font-size:.6rem;letter-spacing:.35em;text-transform:uppercase;color:#5E6472;margin-bottom:.75rem">What We Offer</p>
-      <h2 style="font-family:'Cormorant Garamond',serif;font-size:clamp(2.5rem,5vw,4rem);color:#fff;font-weight:400">Production <em>Excellence</em></h2>
+      <p style="font-size:.6rem;letter-spacing:.35em;text-transform:uppercase;color:#5E6472;margin-bottom:.75rem">{{ $servicesSection?->subheading ?? 'What We Offer' }}</p>
+      <h2 style="font-family:'Cormorant Garamond',serif;font-size:clamp(2.5rem,5vw,4rem);color:#fff;font-weight:400">{{ $servicesSection?->heading ?? 'Production Excellence' }}</h2>
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.5rem">
       @foreach($services as $i => $service)

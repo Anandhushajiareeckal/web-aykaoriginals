@@ -2,13 +2,14 @@
 @section('title', $talent ? 'Edit Talent' : 'Add Talent')
 @section('content')
 
+<form id="talent-form" method="POST" action="{{ $talent ? route('admin.talent.update',$talent) : route('admin.talent.store') }}" enctype="multipart/form-data">
+  @csrf
+  @if($talent) @method('PUT') @endif
 <div style="display:grid;grid-template-columns:1fr;gap:1.5rem;max-width:1000px" class="lg:grid-cols-3">
 
   <!-- Main Form -->
   <div style="grid-column:span 2" class="lg:col-span-2">
-    <form method="POST" action="{{ $talent ? route('admin.talent.update',$talent) : route('admin.talent.store') }}" enctype="multipart/form-data">
-      @csrf
-      @if($talent) @method('PUT') @endif
+    
 
       <!-- Basic Info -->
       <div class="panel" style="margin-bottom:1.25rem">
@@ -96,16 +97,12 @@
         </button>
         <a href="{{ route('admin.talent.index') }}" class="btn btn-outline">Cancel</a>
         @if($talent)
-        <form method="POST" action="{{ route('admin.talent.destroy',$talent) }}" style="margin-left:auto" onsubmit="return confirm('Delete this talent?')">
-          @csrf @method('DELETE')
-          <button type="submit" class="btn btn-danger">
+          <button type="submit" form="delete-talent-form" class="btn btn-danger" style="margin-left:auto" onclick="return confirm('Delete this talent?')">
             <svg style="width:.875rem;height:.875rem" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
             Delete
           </button>
-        </form>
         @endif
       </div>
-    </form>
   </div>
 
   <!-- Sidebar Panel -->
@@ -138,4 +135,11 @@
     @endif
   </div>
 </div>
+</form>
+
+@if($talent)
+<form id="delete-talent-form" method="POST" action="{{ route('admin.talent.destroy',$talent) }}">
+  @csrf @method('DELETE')
+</form>
+@endif
 @endsection
