@@ -83,7 +83,10 @@
           @if($talent && $talent->getMedia('portfolio')->count())
           <div style="display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1rem">
             @foreach($talent->getMedia('portfolio') as $img)
-            <img src="{{ $img->getUrl('thumb') }}" style="width:64px;height:64px;object-fit:cover;border-radius:6px">
+            <div style="position:relative;display:inline-block;">
+              <img src="{{ $img->getUrl('thumb') }}" style="width:64px;height:64px;object-fit:cover;border-radius:6px">
+              <button type="button" onclick="if(confirm('Delete this image?')){ document.getElementById('delete-image-{{ $img->id }}').submit(); }" class="btn btn-danger btn-sm" style="position:absolute;top:-6px;right:-6px;width:20px;height:20px;min-height:20px;padding:0;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:background 0.2s;" title="Delete image">&times;</button>
+            </div>
             @endforeach
           </div>
           @endif
@@ -141,5 +144,10 @@
 <form id="delete-talent-form" method="POST" action="{{ route('admin.talent.destroy',$talent) }}">
   @csrf @method('DELETE')
 </form>
+@foreach($talent->getMedia('portfolio') as $img)
+<form id="delete-image-{{ $img->id }}" method="POST" action="{{ route('admin.talent.image.delete', [$talent, $img->id]) }}">
+  @csrf @method('DELETE')
+</form>
+@endforeach
 @endif
 @endsection

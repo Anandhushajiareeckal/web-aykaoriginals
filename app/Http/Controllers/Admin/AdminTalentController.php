@@ -31,4 +31,8 @@ class AdminTalentController extends Controller {
         return redirect()->route('admin.talent.index')->with('success','Talent updated successfully.');
     }
     public function destroy(Talent $talent) { $talent->delete(); return back()->with('success','Talent deleted.'); }
+    public function deleteImage(Talent $talent, $mediaId) {
+        $talent->media()->where('id', $mediaId)->delete();
+        return back()->with('success', 'Image deleted.');
+    }
 }

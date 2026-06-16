@@ -99,6 +99,7 @@ Route::prefix('admin')->name('admin.')->middleware('admin.auth')->group(function
     Route::get('/talent/{talent}/edit', [AdminTalentController::class, 'edit'])->name('talent.edit');
     Route::put('/talent/{talent}',      [AdminTalentController::class, 'update'])->name('talent.update');
     Route::delete('/talent/{talent}',   [AdminTalentController::class, 'destroy'])->name('talent.destroy');
+    Route::delete('/talent/{talent}/image/{mediaId}', [AdminTalentController::class, 'deleteImage'])->name('talent.image.delete');
 
     Route::get('/work',               [AdminProjectController::class, 'index'])->name('projects.index');
     Route::get('/work/create',        [AdminProjectController::class, 'create'])->name('projects.create');
